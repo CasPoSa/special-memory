@@ -1,0 +1,60 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+
+contract BVBNFT is ERC721, Ownable {
+    uint256 private _tokenIds;
+    uint256 public constant MAX_TOKENS = 1909; // Maximale Anzahl der NFTs
+    uint256 public constant PRICE = 0.1 ether; // Preis pro NFT
+    mapping(uint256 => uint256) public tokenVotes; // Stimmen pro Token
+    mapping(address => bool) public hasVoted; // Tracking für Abstimmungen
+    
+    constructor() ERC721("BVB Fan NFT", "BVBFAN") {}
+    
+    function mintNFT() 
+        public 
+        payable 
+        returns (uint256)
+    {
+        require(_tokenIds < MAX_TOKENS, "Maximale Anzahl erreicht");
+        require(msg.value >= PRICE, "Nicht genug ETH gesendet");
+        
+        _tokenIds++;
+        uint256 newItemId = _tokenIds;
+        _mint(msg.sender, newItemId);
+        
+        return newItemId;
+    }
+
+    // Fan-Voting Funktion
+    function vote(uint256 proposalId) public {
+        require(balanceOf(msg.sender) > 0, "Nur fuer NFT-Besitzer");
+        require(!hasVoted[msg.sender], "Bereits abgestimmt");
+        
+        tokenVotes[proposalId]++;
+        hasVoted[msg.sender] = true;
+    }
+
+    // Auszahlung an BVB-Wallet
+    function withdraw() public onlyOwner {
+        payable(owner()).transfer(address(this).balance);
+{
+  "name": "BVB Special Edition",
+  "description": "Offizielles Borussia Dortmund NFT",
+  "image": "ipfs://[HASH]/bvb_special.png",
+  "attributes": [
+    {
+      "trait_type": "Kategorie",
+      "value": "Limitierte Edition"
+    },
+    {
+      "trait_type": "Saison",
+      "value": "2025/26"
+    },
+    {
+      "trait_type": "Seltenheit",
+      "value": "Ultra Rare"
+    }
+  ]
